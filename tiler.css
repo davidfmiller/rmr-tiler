@@ -1,0 +1,17 @@
+.rmr-tiler {
+  width: 800px;
+  height: 600px;
+  overflow: hidden;
+  background: #000;
+}
+
+.rmr-tiler div {
+  float: left;
+  transition: 0.5s background linear;
+  opacity: 0;
+}
+
+.rmr-tiler div.on {
+  opacity: 1;
+  transition: 0.5s opacity linear;
+}
