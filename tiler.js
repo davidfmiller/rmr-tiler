@@ -177,8 +177,9 @@
     data,
     defaultConfig = {
       debug : false,
+      constrain : false,
       root : document.body,
-      interval: 1000
+//      interval: 1000
     }/*,
     defaultProperties = {
       'color' : COLOR,
@@ -189,17 +190,22 @@
     config = merge(defaultConfig, config);
 //    this.defaults = merge(defaultProperties, defaults);
 
+    console.log(config);
+
     // two events are fired
     this.events = {
       'pop' : function(target, popover) { },
       'unpop' : function(target, popover) { }
     };
 
+    this.constrain = config.constrain;
     this.enabled = true;
     this.interval = config.interval;
     this.debug = config.debug;
     this.data = config.data;
 //    this.listeners = {};
+
+//    console.log(config);
 
     node = config.root ? (config.root instanceof HTMLElement ? config.root : document.querySelector(config.root)) : document.body;
 
@@ -219,41 +225,84 @@
     tile = null,
     index = 0;
 
-    console.log(dimension, width, height, numberOfTiles);
-
     // initialize tiles
     for (i = 0; i < numberOfTiles; i++) {
 
       tile = document.createElement('div');
+      tile.className = 'container off';
+
+      if (this.constrain) {
+
+        if (i == 0) {
+          tile.className += ' topleft';
+        } else if (i == numberOfTiles - 1) {
+          tile.className += ' bottomright';
+        } else if (i == (width / dimension) - 1) {
+          tile.className += ' topright'; 
+        }
+        else if (i == numberOfTiles - 1 - 1 - (width / dimension)) {
+          tile.className += ' bottomleft';
+        }
+        else if (i < (width / dimension)) {
+          tile.className += ' top';
+        }
+        else if (i > numberOfTiles - 1 - (width / dimension)) {
+          tile.className += ' bottom';
+        }
+        else if (i % (width / dimension) == 0) {
+          tile.className += ' left';
+        }
+        else if (i % (width / dimension) == width / dimension - 1) {
+          tile.className += ' right';
+        }
+      }
+
+      tile.innerHTML = '<div class="tile"><section class="front"><figure></figure></section><section class="back"><figure></figure></section>';
       index = Math.floor(Math.random() * this.data.length);
 
       tile.style.width = dimension + 'px';
       tile.style.height = dimension + 'px';
 
-      tile.className = this.data[index];
+      tile.querySelector('.front figure').className = this.data[index];
+      index = Math.floor(Math.random() * this.data.length);
+      tile.querySelector('.back figure').className = this.data[index];
+
       this.root.appendChild(tile);
 
-      window.setTimeout(function() { this.classList.add('on'); }.bind(tile), i * 100);
+      window.setTimeout(function() {  this.classList.remove('off'); }.bind(tile), i * 25);
     }
 
+    window.setTimeout(function() {
+
+      var scope = arguments[0];
+      console.log(scope);
+      
+      
+      scope.root.classList.add('init');
+      scope.timeout = window.setInterval(function() {
+        scope.randomize();
+      }, scope.interval);
+
+      }, numberOfTiles * 25, $);
+
+/*
     this.timeout = window.setInterval(function() {
 
       var scope = arguments[0];
-//      scope.randomize();
+      scope.randomize();
 
-    }, this.interval, this);
+    }, numberOfTiles * 50 + this.interval, this);
+*/
 
     this.randomize = function() {
 
-      var tiles = this.root.querySelectorAll('div');
-      var tileIndex = Math.floor(Math.random() * tiles.length);
+      var
+      tiles = this.root.querySelectorAll('.tile'),
+      tileIndex = Math.floor(Math.random() * tiles.length),
+      dataIndex = Math.floor(Math.random() * this.data.length);
 
-//      tiles[tileIndex].classList.remove(tiles[tileIndex].classList.item(1));
-
-      var dataIndex = Math.floor(Math.random() * this.data.length);
-      tiles[tileIndex].className = this.data[dataIndex] +  ' on';
-
-      console.log(this.data[dataIndex], tileIndex);
+      tiles[tileIndex].querySelector(tiles[tileIndex].classList.contains('flipped') ? '.front figure'  : '.back figure').className = this.data[dataIndex];
+      tiles[tileIndex].classList.toggle('flipped');
     };
 
     this.destroy = function() {
