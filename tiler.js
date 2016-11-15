@@ -178,6 +178,7 @@
     defaultConfig = {
       debug : false,
       constrain : false,
+      zoom : false,
       root : document.body,
 //      interval: 1000
     }/*,
@@ -190,14 +191,9 @@
     config = merge(defaultConfig, config);
 //    this.defaults = merge(defaultProperties, defaults);
 
-    console.log(config);
+//    console.log(config);
 
-    // two events are fired
-    this.events = {
-      'pop' : function(target, popover) { },
-      'unpop' : function(target, popover) { }
-    };
-
+    this.zoom = config.zoom;
     this.constrain = config.constrain;
     this.enabled = true;
     this.interval = config.interval;
@@ -214,6 +210,9 @@
     }
 
     this.root = node;
+    if (this.zoom) {
+      this.root.classList.add('zoom');
+    }
 
     var
     styles = window.getComputedStyle(node),
@@ -232,29 +231,14 @@
       tile.className = 'container off';
 
       if (this.constrain) {
-
-        if (i == 0) {
-          tile.className += ' topleft';
-        } else if (i == numberOfTiles - 1) {
-          tile.className += ' bottomright';
-        } else if (i == (width / dimension) - 1) {
-          tile.className += ' topright'; 
-        }
-        else if (i == numberOfTiles - 1 - 1 - (width / dimension)) {
-          tile.className += ' bottomleft';
-        }
-        else if (i < (width / dimension)) {
-          tile.className += ' top';
-        }
-        else if (i > numberOfTiles - 1 - (width / dimension)) {
-          tile.className += ' bottom';
-        }
-        else if (i % (width / dimension) == 0) {
-          tile.className += ' left';
-        }
-        else if (i % (width / dimension) == width / dimension - 1) {
-          tile.className += ' right';
-        }
+        if (i == 0)                                                { tile.className += ' topleft'; }
+        else if (i == numberOfTiles - 1)                           { tile.className += ' bottomright'; }
+        else if (i == (width / dimension) - 1)                     { tile.className += ' topright';  }
+        else if (i == numberOfTiles - 1 - 1 - (width / dimension)) { tile.className += ' bottomleft'; }
+        else if (i < (width / dimension))                          { tile.className += ' top'; }
+        else if (i > numberOfTiles - 1 - (width / dimension))      { tile.className += ' bottom'; }
+        else if (i % (width / dimension) == 0)                     { tile.className += ' left'; }
+        else if (i % (width / dimension) == width / dimension - 1) { tile.className += ' right'; }
       }
 
       tile.innerHTML = '<div class="tile"><section class="front"><figure></figure></section><section class="back"><figure></figure></section>';
@@ -275,24 +259,12 @@
     window.setTimeout(function() {
 
       var scope = arguments[0];
-      console.log(scope);
-      
-      
       scope.root.classList.add('init');
       scope.timeout = window.setInterval(function() {
         scope.randomize();
       }, scope.interval);
 
-      }, numberOfTiles * 25, $);
-
-/*
-    this.timeout = window.setInterval(function() {
-
-      var scope = arguments[0];
-      scope.randomize();
-
-    }, numberOfTiles * 50 + this.interval, this);
-*/
+      }, numberOfTiles * 25 + 1000, $);
 
     this.randomize = function() {
 
@@ -306,10 +278,6 @@
     };
 
     this.destroy = function() {
-
-//      var n;
-      // remove resize listener
-      window.removeEventListener('resize', this.windowResizer);
       return this;
     };
 
