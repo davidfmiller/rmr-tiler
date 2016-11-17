@@ -52,7 +52,7 @@ div.rmr-tiler.zoom .container:hover { /* .init*/
   height: 100%;
   position: absolute; 
   transform-style: preserve-3D;
-  transition: transform .5s linear;
+  transition: transform 0.5s linear;
   transform-origin: center center;
 }
 

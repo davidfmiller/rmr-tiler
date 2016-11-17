@@ -13,17 +13,6 @@
   //
   VERSION = '0.0.1',
 
-
-  /*
-   * Generate a unique string suitable for id attributes
-   *
-   * @param basename (String)
-   * @return string
-   */
-  guid = function(basename) {
-    return basename + '-' + parseInt(Math.random() * 100, 10) + '-' + parseInt(Math.random() * 1000, 10);
-  },
-
   /*
    * Merge two objects into one, values in b take precedence over values in a
    *
@@ -42,95 +31,6 @@
       o[i] = b[i];
     }
     return o;
-  },
-
-  /*
-   * Convert an array-like thing (ex: NodeList or arguments object) into a proper array
-   *
-   * @param list (array-like thing)
-   * @return Array
-   */
-  arr = function(list) {
-    var ret = [], i = 0;
-
-    if (! list.length) { return ret; }
-
-    for (i = 0; i < list.length; i++) {
-      ret.push(list[i]);
-    }
-
-    return ret;
-  },
-
-  /*
-   * Create an element with a set of attributes/values
-   *
-   * @param type (String)
-   * @param attrs {Object}
-   *
-   * @return HTMLElement
-   */
-  makeElement = function(type, attrs) {
-     var
-     n = document.createElement(type),
-     i = null;
-
-     for (i in attrs) {
-       n.setAttribute(i, attrs[i]);
-     }
-     return n;
-  },
-
-  /*
-   * Retrieve an object containing { top : xx, left : xx, bottom: xx, right: xx, width: xx, height: xx }
-   *
-   * @param node (DOMNode)
-   */
-  getRect = function(node) {
-
-    var
-    rect = node.getBoundingClientRect(),
-    ret = { top : rect.top, left : rect.left, bottom: rect.bottom, right : rect.right }; // create a new object that is not read-only
-
-    ret.top += window.pageYOffset;
-    ret.left += window.pageXOffset;
-
-    ret.bottom += window.pageYOffset;
-    ret.right += window.pageYOffset;
-
-    ret.width = rect.right - rect.left;
-    ret.height = rect.bottom - rect.top;
-
-    return ret;
-  },
-
-  /*
-   * Retrieve object containing popover data for an element on the page
-   *
-   * @param scope {Popover}
-   * @param node {
-   * @return {Object}
-   */
-  getDataForNode = function(scope, node) {
-
-    var
-    val = scope.factory ? scope.factory(node) : node.getAttribute(ATTR),
-    data = scope.defaults;
-
-    if (typeof val != "object") {
-      try {
-        val = JSON.parse(val);
-
-        if (typeof val === 'number') {
-          val = { content : val };
-        }
-
-      } catch (err) {
-        val = { content : val };
-      }
-    }
-
-    return merge(data, val);
   },
 
   /**
@@ -171,18 +71,54 @@
     i = 0,
     n,
     node,
-    on,
     l,
     scale = 2,
     data,
+    styles = {},
+    width = 0,
+    height = 0,
+    dimension = 0,
+    numberOfTiles = 0,
+    tile = null,
+    index = 0,
     defaultConfig = {
-      debug : false,
-      constrain : false,
+
+      /**
+        Toggle magnification of tiles when hovered over
+       */
       zoom : false,
+
+      /**
+        When zoom is enabled, constrain tiles to *not* overflow the root container
+       */
+      constrain : false,
+
+      /**
+        Root node in the document for the tiler
+       */
       root : document.body,
+
+      /**
+        Number of tiles that will be created in each dimension
+       */
       scale : 1,
+
+      /**
+        Number of milliseconds between tile flips
+       */
       interval: 1000,
-      events : { on : function(id) { console.log(id); }  }
+
+      /**
+        Number of milliseconds between tile flips
+       */
+      events : {
+        click : function(id) {
+          //console.log('click ' + id);
+        },
+        flip : function(back, front) {
+          //console.log('flip ' + back + ' ' + front);
+        }
+      }
     };
 
     config = merge(defaultConfig, config);
@@ -192,11 +128,8 @@
     */
     this.interval = config.interval;
 
-    this.debug = config.debug;
     this.events = config.events;
     this.data = config.data;
-//    this.listeners = {};
-
 //    console.log(config);
 
     node = config.root ? (config.root instanceof HTMLElement ? config.root : document.querySelector(config.root)) : document.body;
@@ -213,14 +146,11 @@
 //    this.root.innerHTML = window.location + ' ' + window.location.hash;
 //    return;
 
-    var
-    styles = window.getComputedStyle(node),
-    width = parseInt(styles.width),
-    height = parseInt(styles.height),
-    dimension = gcd(width, height) / config.scale,
-    numberOfTiles = width * height / dimension / dimension,
-    tile = null,
-    index = 0;
+    styles = window.getComputedStyle(node);
+    width = parseInt(styles.width);
+    height = parseInt(styles.height);
+    dimension = gcd(width, height) / config.scale;
+    numberOfTiles = width * height / dimension / dimension;
 
     for (i = 0; i < numberOfTiles; i++) {
 
@@ -228,21 +158,20 @@
       tile.className = 'container off';
 
       if (config.constrain) {
-        if (i == 0)                                                { tile.className += ' topleft'; }
-        else if (i == numberOfTiles - 1)                           { tile.className += ' bottomright'; }
-        else if (i == (width / dimension) - 1)                     { tile.className += ' topright';  }
-        else if (i == numberOfTiles - 1 - 1 - (width / dimension)) { tile.className += ' bottomleft'; }
+        if (i === 0)                                                { tile.className += ' topleft'; }
+        else if (i === numberOfTiles - 1)                           { tile.className += ' bottomright'; }
+        else if (i === (width / dimension) - 1)                     { tile.className += ' topright';  }
+        else if (i === numberOfTiles - 1 - 1 - (width / dimension)) { tile.className += ' bottomleft'; }
         else if (i < (width / dimension))                          { tile.className += ' top'; }
         else if (i > numberOfTiles - 1 - (width / dimension))      { tile.className += ' bottom'; }
-        else if (i % (width / dimension) == 0)                     { tile.className += ' left'; }
-        else if (i % (width / dimension) == width / dimension - 1) { tile.className += ' right'; }
+        else if (i % (width / dimension) === 0)                     { tile.className += ' left'; }
+        else if (i % (width / dimension) === width / dimension - 1) { tile.className += ' right'; }
       }
 
       tile.innerHTML = '<div class="tile"><section class="front"><figure></figure></section><section class="back"><figure></figure></section>';
       index = Math.floor(Math.random() * this.data.length);
 
-      tile.style.width = dimension + 'px';
-      tile.style.height = dimension + 'px';
+      setStyles(tile, { width : dimension + 'px', height : dimension + 'px' });
 
       tile.querySelector('.front figure').className = this.data[index];
       index = Math.floor(Math.random() * this.data.length);
@@ -255,7 +184,7 @@
 
     this.root.addEventListener('click', function(e) {
       if ($.events && $.events.on) {
-        $.events.on(e.target.className);
+        $.events.click(e.target.className);
       }
     });
 
@@ -274,17 +203,31 @@
       var
       tiles = this.root.querySelectorAll('.tile'),
       tileIndex = Math.floor(Math.random() * tiles.length),
-      dataIndex = Math.floor(Math.random() * this.data.length);
+      dataIndex = Math.floor(Math.random() * this.data.length),
+      isFlipped = tiles[tileIndex].classList.contains('flipped'),
+      oldSelector = isFlipped ? '.back figure' : '.front figure',
+      newSelector = isFlipped ? '.front figure'  : '.back figure',
+      newID = this.data[dataIndex];
 
-      tiles[tileIndex].querySelector(tiles[tileIndex].classList.contains('flipped') ? '.front figure'  : '.back figure').className = this.data[dataIndex];
+      if (this.events && this.events.flip) {
+        this.events.flip(tiles[tileIndex].querySelector(oldSelector).className, newID);
+      }
+
+      tiles[tileIndex].querySelector(newSelector).className = newID;
       tiles[tileIndex].classList.toggle('flipped');
     };
 
-    this.destroy = function() {
-      return this;
-    };
+    this.toggle = function() {
 
-    if (this.debug) { window.console.log(this.toString()); }
+      if (this.enabled) {
+      
+      }
+      else {
+      
+      }
+
+      this.enabled = ! this.enabled;
+    };
   };
 
   /*!
