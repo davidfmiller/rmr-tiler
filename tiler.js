@@ -168,36 +168,32 @@
 
     var
     $ = this,
-    nodes,
     i = 0,
     n,
     node,
     on,
     l,
+    scale = 2,
     data,
     defaultConfig = {
       debug : false,
       constrain : false,
       zoom : false,
       root : document.body,
-//      interval: 1000
-    }/*,
-    defaultProperties = {
-      'color' : COLOR,
-      'margin' : MARGIN,
-      'class' : ''
-    }*/;
+      scale : 1,
+      interval: 1000,
+      events : { on : function(id) { console.log(id); }  }
+    };
 
     config = merge(defaultConfig, config);
-//    this.defaults = merge(defaultProperties, defaults);
 
-//    console.log(config);
-
-    this.zoom = config.zoom;
-    this.constrain = config.constrain;
-    this.enabled = true;
+    /**
+      
+    */
     this.interval = config.interval;
+
     this.debug = config.debug;
+    this.events = config.events;
     this.data = config.data;
 //    this.listeners = {};
 
@@ -210,27 +206,28 @@
     }
 
     this.root = node;
-    if (this.zoom) {
+    if (config.zoom) {
       this.root.classList.add('zoom');
     }
+
+//    this.root.innerHTML = window.location + ' ' + window.location.hash;
+//    return;
 
     var
     styles = window.getComputedStyle(node),
     width = parseInt(styles.width),
     height = parseInt(styles.height),
-    dimension = gcd(width, height),
+    dimension = gcd(width, height) / config.scale,
     numberOfTiles = width * height / dimension / dimension,
-    i = 0,
     tile = null,
     index = 0;
 
-    // initialize tiles
     for (i = 0; i < numberOfTiles; i++) {
 
       tile = document.createElement('div');
       tile.className = 'container off';
 
-      if (this.constrain) {
+      if (config.constrain) {
         if (i == 0)                                                { tile.className += ' topleft'; }
         else if (i == numberOfTiles - 1)                           { tile.className += ' bottomright'; }
         else if (i == (width / dimension) - 1)                     { tile.className += ' topright';  }
@@ -255,6 +252,12 @@
 
       window.setTimeout(function() {  this.classList.remove('off'); }.bind(tile), i * 25);
     }
+
+    this.root.addEventListener('click', function(e) {
+      if ($.events && $.events.on) {
+        $.events.on(e.target.className);
+      }
+    });
 
     window.setTimeout(function() {
 
@@ -302,7 +305,7 @@
    * @return {String}
    */
   window.Tiler.prototype.toString = function() {
-    return 'Tiler ' + JSON.stringify({root : '' + this.root, enabled : this.enabled, delay : this.interval, debug : this.debug});
+    return 'Tiler ' + JSON.stringify({root : '' + this.root, delay : this.interval, debug : this.debug});
   };
 
 }());
