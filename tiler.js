@@ -99,6 +99,16 @@
       root : document.body,
 
       /**
+        Delay in display one tile after the previous has started loading
+       */
+      displayDelay : 25,
+
+      /**
+        Begin flipping tiles after initialization is complete
+       */
+       autoStart : true,
+
+      /**
         Number of tiles that will be created in each dimension
        */
       scale : 1,
@@ -128,6 +138,7 @@
     */
     this.interval = config.interval;
 
+    this.timeout = null;
     this.events = config.events;
     this.data = config.data;
 //    console.log(config);
@@ -142,6 +153,8 @@
     if (config.zoom) {
       this.root.classList.add('zoom');
     }
+
+    this.root.innerHTML = '';
 
 //    this.root.innerHTML = window.location + ' ' + window.location.hash;
 //    return;
@@ -179,7 +192,7 @@
 
       this.root.appendChild(tile);
 
-      window.setTimeout(function() {  this.classList.remove('off'); }.bind(tile), i * 25);
+      window.setTimeout(function() {  this.classList.remove('off'); }.bind(tile), i * config.displayDelay);
     }
 
     this.root.addEventListener('click', function(e) {
@@ -188,17 +201,7 @@
       }
     });
 
-    window.setTimeout(function() {
-
-      var scope = arguments[0];
-      scope.root.classList.add('init');
-      scope.timeout = window.setInterval(function() {
-        scope.randomize();
-      }, scope.interval);
-
-      }, numberOfTiles * 25 + 1000, $);
-
-    this.randomize = function() {
+    this.flip = function() {
 
       var
       tiles = this.root.querySelectorAll('.tile'),
@@ -217,17 +220,47 @@
       tiles[tileIndex].classList.toggle('flipped');
     };
 
-    this.toggle = function() {
+    this.stop = function() {
+      if (! this.timeout) { return; }
+      window.clearTimeout(this.timeout);
+      this.timeout = null;
+    };
 
-      if (this.enabled) {
-      
+    this.start = function() {
+
+      if (this.timeout) { return; }
+
+      if (! this.root.classList.contains('init')) {
+        this.root.classList.add('init');
+      }
+
+      this.flip();
+      this.timeout = window.setInterval(function() {
+        var scope = arguments[0];
+        scope.flip();
+      }, this.interval, this);
+    };
+
+    this.toggle = function() {
+      if (this.timeout) {
+        this.stop();
       }
       else {
-      
+        this.start();
       }
-
-      this.enabled = ! this.enabled;
     };
+
+    this.destroy = function() {
+      this.stop();
+      this.root.innerHTML = '';
+      this.root = null;
+      this.events = null;
+      this.data = null;
+    };
+
+    if (config.autoStart) {
+      window.setTimeout(function() { arguments[0].toggle(); }, this.interval + config.displayDelay * numberOfTiles, this);
+    }
   };
 
   /*!

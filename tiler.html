@@ -24,6 +24,11 @@
       position: absolute;
     }
 
+    body.rmr-screen .rmr-tiler.preview {
+      width: 100%;
+      height: 100%;
+    }
+
     .rmr-tiler.preview {
       width: 800px;
       height: 500px;
@@ -178,12 +183,15 @@
 </head>
 <body>
 <div class="rmr-tiler"></div>
+
+<button class="fullscreen">Full screen</button>
+<button class="toggle">Toggle</button>
 </body>
 
-<script src="tiler.js"></script>
 <script>
 
-(function(){
+var tile;
+document.addEventListener("DOMContentLoaded", function(event) { 
 
   var f = function() { 
 
@@ -193,21 +201,18 @@
     body = document.querySelector('body'),
     bodyStyles = window.getComputedStyle(body);
 
-//    if (document.location.hash != '#preview') {
-      div.className += ' preview';
-//    }
+    if (! div.classList.contains('preview')) {
+      div.classList.add('preview');
+    }
 
-//    console.log(bodyStyles.height, divStyles.height);
-
-    div.style.top = (parseInt(bodyStyles.height, 10) - parseInt(divStyles.height, 10)) / 2 + 'px';
-    div.style.left = (parseInt(bodyStyles.width, 10) - parseInt(divStyles.width, 10)) / 2 + 'px';
+    div.style.top = Math.floor( (parseInt(bodyStyles.height, 10) - parseInt(divStyles.height, 10)) / 2) + 'px';
+    div.style.left = Math.floor ((parseInt(bodyStyles.width, 10) - parseInt(divStyles.width, 10)) / 2) + 'px';
   };
 
   window.addEventListener('resize', f);
   f();
-}());
 
-  new Tiler({root: '.rmr-tiler', scale: 2, zoom: true, constrain: true, debug : true, data : [
+  tile = new Tiler({root: '.rmr-tiler', scale: 1, autoStart : true, displayDelay : 10, zoom: true, constrain: true, debug : true, data : [
 
     'alberta',
     'alouettes',
@@ -245,6 +250,7 @@
     'yyc88'
   ], interval : 1000 } );
 
-</script>
+});
 
+</script>
 </html>

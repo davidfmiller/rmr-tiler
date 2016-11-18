@@ -72,12 +72,6 @@ div.rmr-tiler.zoom .container:hover { /* .init*/
   margin: 0;
 }
 
-/*
-.rmr-tiler .back {
-  transform: rotateY( 180deg );
-}
-*/
-
 .rmr-tiler .tile.flipped {
   transform: rotateY( 180deg );
 }
