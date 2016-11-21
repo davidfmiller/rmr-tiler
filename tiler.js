@@ -201,6 +201,11 @@
       }
     });
 
+    if (config.autoStart) {
+      window.setTimeout(function() { arguments[0].toggle(); }, this.interval + config.displayDelay * numberOfTiles, this);
+    }
+  };
+
     /**
       Flip a random tile
       */
@@ -265,7 +270,7 @@
     /**
 
      */
-    this.destroy = function() {
+    window.Tiler.prototype.destroy = function() {
       this.stop();
       this.root.innerHTML = '';
       this.root = null;
@@ -273,30 +278,13 @@
       this.data = null;
     };
 
-    if (config.autoStart) {
-      window.setTimeout(function() { arguments[0].toggle(); }, this.interval + config.displayDelay * numberOfTiles, this);
-    }
-  };
-
-  /*!
-   * Attach a listener to `pop`/`unpop` events
-   *
-   * @param event {String} - one of `pop` or `unpop`
-   * @param method {Function} - the method that will be invoked on the relevant event
-   * @chainable
-  window.Tiler.prototype.on = function(event, method) {
-    this.events[event] = method;
-    return this;
-  };
-   */
-
   /**
    * Return a string representation of the instance
    *
    * @return {String}
    */
   window.Tiler.prototype.toString = function() {
-    return 'Tiler ' + JSON.stringify({root : '' + this.root, delay : this.interval, debug : this.debug});
+    return 'Tiler ' + JSON.stringify({root : '' + this.root, delay : this.interval});
   };
 
 }());
