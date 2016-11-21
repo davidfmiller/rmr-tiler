@@ -3,16 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <title>Tiler</title>
-  <link rel="stylesheet" type="text/css" href="../tiler.css">
+  <link rel="stylesheet" type="text/css" href="http://davidfmiller.github.io/man/man.css">
+  <link rel="stylesheet" type="text/css" href="../src/tiler.css">
   <style>
-
-    html, body {
-      width: 100%;
-      height: 100%;
-      margin: 0;
-      padding: 0;
-      background: #000;
-    }
 
     .rmr-tiler {
       width: 800px;
@@ -20,23 +13,10 @@
       margin: 0 auto;
       transition: background 0.5s linear;
       color: #fff;
-      font-size: 20px;
-      position: absolute;
     }
-
-    .rmr-tiler.screensaver {
-      width: 100%;
-      height: 100%;
-    }
-
-    .rmr-tiler.preview {
-      width: 300px;
-      height: 200px;
-    }
-
 
     .rmr-tiler.init {
-      background: #111;
+      background: #ddd;
     }
 
     .rmr-tiler figure {
@@ -208,37 +188,24 @@
   </style>
 </head>
 <body>
+
+<h1>Tiler</h1>
+
+<p>Tiler is a simple JavaScript &amp; CSS library for creating tiled presentation.</p>
+
 <div class="rmr-tiler"></div>
+
+<hr>
+
+<p>Built by <a href="http://readmeansrun.com" title="READMEANSRUN">RMR</a>, hosted on <a href="https://github.com/davidfmiller/tiler" title="GitHub">GitHub</a></p>
+
 </body>
 
-<script src="../tiler.js"></script>
+<script src="../src/tiler.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function(event) { 
 
-  var tile,
-  f = function() { 
-
-    var
-    div = document.querySelector('.rmr-tiler'),
-    divStyles = window.getComputedStyle(div),
-    body = document.querySelector('body'),
-    bodyStyles = window.getComputedStyle(body);
-
-    if (window.location.hash === '#screensaver') {
-      div.classList.add('screensaver');
-    }
-    else if (window.location.hash === '#preview') {
-      div.classList.add('preview');
-    }
-
-    div.style.top = Math.floor( (parseInt(bodyStyles.height, 10) - parseInt(divStyles.height, 10)) / 2) + 'px';
-    div.style.left = Math.floor ((parseInt(bodyStyles.width, 10) - parseInt(divStyles.width, 10)) / 2) + 'px';
-  };
-
-  window.addEventListener('resize', f);
-  f();
-
-  tile = new Tiler({root: '.rmr-tiler', scale: 1, autoStart : true, displayDelay : 10, zoom: true, constrain: true, debug : true, data : [
+  var tile = new Tiler({root: '.rmr-tiler', scale: 1, autoStart : true, displayDelay : 10, zoom: true, constrain: true, debug : true, data : [
 
     'alberta',
     'alouettes',

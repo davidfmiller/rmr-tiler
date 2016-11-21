@@ -1,3 +1,3 @@
 # tiler
 
-Tiler is a simple JavaScript library to 
+Documentation [here](https://davidfmiller.github.io/tiler/)
