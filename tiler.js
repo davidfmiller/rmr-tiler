@@ -89,7 +89,7 @@
       zoom : false,
 
       /**
-        When zoom is enabled, constrain tiles to *not* overflow the root container
+        When zoom is enabled, constrain tiles to *not* overflow the bounds of the root container
        */
       constrain : false,
 
@@ -99,7 +99,7 @@
       root : document.body,
 
       /**
-        Delay in display one tile after the previous has started loading
+        Timed delay which must pass after display one tile after the previous has started loading
        */
       displayDelay : 25,
 
@@ -109,7 +109,7 @@
        autoStart : true,
 
       /**
-        Number of tiles that will be created in each dimension
+        Number of tiles that will be created in each dimension (1 → 1 tile, 2 → 4 tiles, 3 → 9 tiles, etc.)
        */
       scale : 1,
 
@@ -119,12 +119,25 @@
       interval: 1000,
 
       /**
-        Number of milliseconds between tile flips
+        Handlers for events 
        */
       events : {
+
+        /**
+         Invoked when a tile is clicked
+
+         @param id - 
+         */
         click : function(id) {
           //console.log('click ' + id);
         },
+
+        /**
+          Invoked when a tile is flipped
+
+          @param back - old id of the tile (flipped out)
+          @param front - new id of the tile (flipped in)
+         */
         flip : function(back, front) {
           //console.log('flip ' + back + ' ' + front);
         }
@@ -141,12 +154,15 @@
     this.timeout = null;
     this.events = config.events;
     this.data = config.data;
-//    console.log(config);
 
     node = config.root ? (config.root instanceof HTMLElement ? config.root : document.querySelector(config.root)) : document.body;
 
     if (! node) {
       throw Error('Invalid Tiler root [' + config.root + ']');
+    }
+
+    if (! this.data || this.data.length == 0) {
+      throw Error('No data for Tiler [' + config.root + ']');
     }
 
     this.root = node;
@@ -156,9 +172,7 @@
 
     this.root.innerHTML = '';
 
-//    this.root.innerHTML = window.location + ' ' + window.location.hash;
-//    return;
-
+    // calculate necessary dimensions & 
     styles = window.getComputedStyle(node);
     width = parseInt(styles.width);
     height = parseInt(styles.height);
@@ -170,7 +184,8 @@
       tile = document.createElement('div');
       tile.className = 'container off';
 
-      if (config.constrain) {
+      // add necessary class to tile if constrain is enabled
+      if (config.constrain && config.zoom) {
         if (i === 0)                                                { tile.className += ' topleft'; }
         else if (i === numberOfTiles - 1)                           { tile.className += ' bottomright'; }
         else if (i === (width / dimension) - 1)                     { tile.className += ' topright';  }
@@ -181,17 +196,19 @@
         else if (i % (width / dimension) === width / dimension - 1) { tile.className += ' right'; }
       }
 
+      // add necessary children & dimensions 
       tile.innerHTML = '<div class="tile"><section class="front"><figure></figure></section><section class="back"><figure></figure></section>';
-      index = Math.floor(Math.random() * this.data.length);
-
       setStyles(tile, { width : dimension + 'px', height : dimension + 'px' });
 
+      // apply randomized classes from the data for 
+      index = Math.floor(Math.random() * this.data.length);
       tile.querySelector('.front figure').className = this.data[index];
       index = Math.floor(Math.random() * this.data.length);
       tile.querySelector('.back figure').className = this.data[index];
 
       this.root.appendChild(tile);
 
+      // 
       window.setTimeout(function() {  this.classList.remove('off'); }.bind(tile), i * config.displayDelay);
     }
 
@@ -238,10 +255,11 @@
     };
 
     /**
-     Begin auto-flipping tiles (flipping one immediately)
+     Begin auto-flipping tiles (flipping one immediately) at periodic interval
       */
     window.Tiler.prototype.start = function() {
 
+      // if timeout is already set, no further work is needed
       if (this.timeout) { return; }
 
       if (! this.root.classList.contains('init')) {
@@ -249,6 +267,8 @@
       }
 
       this.flip();
+
+      // flip
       this.timeout = window.setInterval(function() {
         var scope = arguments[0];
         scope.flip();
@@ -256,7 +276,7 @@
     };
 
     /**
-      If autoplay is on, stop it; if not autoplaying, begin autoplay
+      Stop autoplay if enabled; begin autoplaying if it's not enabled
      */
     window.Tiler.prototype.toggle = function() {
       if (this.timeout) {
@@ -268,7 +288,7 @@
     };
 
     /**
-
+      Clean up
      */
     window.Tiler.prototype.destroy = function() {
       this.stop();
@@ -284,7 +304,7 @@
    * @return {String}
    */
   window.Tiler.prototype.toString = function() {
-    return 'Tiler ' + JSON.stringify({root : '' + this.root, delay : this.interval});
+    return 'Tiler ' + JSON.stringify({root : '' + this.root, delay : this.interval, data : this.data });
   };
 
 }());
