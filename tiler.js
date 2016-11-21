@@ -201,6 +201,9 @@
       }
     });
 
+    /**
+      Flip a random tile
+      */
     this.flip = function() {
 
       var
@@ -220,12 +223,18 @@
       tiles[tileIndex].classList.toggle('flipped');
     };
 
+    /**
+     Stop auto-flipping tiles
+      */
     this.stop = function() {
       if (! this.timeout) { return; }
       window.clearTimeout(this.timeout);
       this.timeout = null;
     };
 
+    /**
+     Begin auto-flipping tiles (flipping one immediately)
+      */
     this.start = function() {
 
       if (this.timeout) { return; }
@@ -241,6 +250,9 @@
       }, this.interval, this);
     };
 
+    /**
+      If autoplay is on, stop it; if not autoplaying, begin autoplay
+     */
     this.toggle = function() {
       if (this.timeout) {
         this.stop();
@@ -250,6 +262,9 @@
       }
     };
 
+    /**
+
+     */
     this.destroy = function() {
       this.stop();
       this.root.innerHTML = '';
