@@ -204,7 +204,7 @@
     /**
       Flip a random tile
       */
-    this.flip = function() {
+    window.Tiler.prototype.flip = function() {
 
       var
       tiles = this.root.querySelectorAll('.tile'),
@@ -226,7 +226,7 @@
     /**
      Stop auto-flipping tiles
       */
-    this.stop = function() {
+    window.Tiler.prototype.stop = function() {
       if (! this.timeout) { return; }
       window.clearTimeout(this.timeout);
       this.timeout = null;
@@ -235,7 +235,7 @@
     /**
      Begin auto-flipping tiles (flipping one immediately)
       */
-    this.start = function() {
+    window.Tiler.prototype.start = function() {
 
       if (this.timeout) { return; }
 
@@ -253,7 +253,7 @@
     /**
       If autoplay is on, stop it; if not autoplaying, begin autoplay
      */
-    this.toggle = function() {
+    window.Tiler.prototype.toggle = function() {
       if (this.timeout) {
         this.stop();
       }
