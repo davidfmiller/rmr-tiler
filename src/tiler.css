@@ -12,7 +12,7 @@
 }
 
 .rmr-tiler .bottomleft {
-  transform-origin: 0% 50%;
+  transform-origin: 0% 100%;
 }
 
 .rmr-tiler .topright {
