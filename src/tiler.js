@@ -1,3 +1,4 @@
+
 /* jshint undef: true,strict:true,trailing:true,loopfunc:true */
 /* global document,window,HTMLElement */
 
@@ -189,7 +190,7 @@
         if (i === 0)                                                { tile.className += ' topleft'; }
         else if (i === numberOfTiles - 1)                           { tile.className += ' bottomright'; }
         else if (i === (width / dimension) - 1)                     { tile.className += ' topright';  }
-        else if (i === numberOfTiles - 1 - 1 - (width / dimension)) { tile.className += ' bottomleft'; }
+        else if (i % (width / dimension) === 0  && (numberOfTiles - i == (width/dimension))) { tile.className += ' bottomleft'; }
         else if (i < (width / dimension))                          { tile.className += ' top'; }
         else if (i > numberOfTiles - 1 - (width / dimension))      { tile.className += ' bottom'; }
         else if (i % (width / dimension) === 0)                     { tile.className += ' left'; }
@@ -308,3 +309,4 @@
   };
 
 }());
+
