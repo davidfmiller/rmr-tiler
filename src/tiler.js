@@ -155,6 +155,7 @@
     this.timeout = null;
     this.events = config.events;
     this.data = config.data;
+    this.hovered = -1;
 
     node = config.root ? (config.root instanceof HTMLElement ? config.root : document.querySelector(config.root)) : document.body;
 
@@ -171,6 +172,10 @@
       this.root.classList.add('zoom');
     }
 
+    this.root.addEventListener('mouseleave', function(event) {
+      $.hovered = -1;
+    });
+
     this.root.innerHTML = '';
 
     // calculate necessary dimensions & 
@@ -180,16 +185,23 @@
     dimension = gcd(width, height) / config.scale;
     numberOfTiles = width * height / dimension / dimension;
 
+    this.tilesPerRow = 0;
+
     for (i = 0; i < numberOfTiles; i++) {
 
       tile = document.createElement('div');
       tile.className = 'container off';
+      tile.setAttribute('data-tiler', i);
+
+      tile.addEventListener('mouseenter', function(event) {
+        $.hovered = event.target.getAttribute('data-tiler');
+      });
 
       // add necessary class to tile if constrain is enabled
       if (config.constrain && config.zoom) {
         if (i === 0)                                                { tile.className += ' topleft'; }
         else if (i === numberOfTiles - 1)                           { tile.className += ' bottomright'; }
-        else if (i === (width / dimension) - 1)                     { tile.className += ' topright';  }
+        else if (i === (width / dimension) - 1)                     { tile.className += ' topright'; this.tilesPerRow = i + 1; }
         else if (i % (width / dimension) === 0  && (numberOfTiles - i == (width/dimension))) { tile.className += ' bottomleft'; }
         else if (i < (width / dimension))                          { tile.className += ' top'; }
         else if (i > numberOfTiles - 1 - (width / dimension))      { tile.className += ' bottom'; }
@@ -224,80 +236,91 @@
     }
   };
 
-    /**
-      Flip a random tile
-      */
-    window.Tiler.prototype.flip = function() {
+  /**
+    Flip a random tile
+    */
+  window.Tiler.prototype.flip = function() {
 
-      var
-      tiles = this.root.querySelectorAll('.tile'),
-      tileIndex = Math.floor(Math.random() * tiles.length),
-      dataIndex = Math.floor(Math.random() * this.data.length),
-      isFlipped = tiles[tileIndex].classList.contains('flipped'),
-      oldSelector = isFlipped ? '.back figure' : '.front figure',
-      newSelector = isFlipped ? '.front figure'  : '.back figure',
-      newID = this.data[dataIndex];
+    var
+    tiles = this.root.querySelectorAll('.tile'),
 
-      if (this.events && this.events.flip) {
-        this.events.flip(tiles[tileIndex].querySelector(oldSelector).className, newID);
-      }
+    // the index of the tile that should be flipped
+    tileIndex = Math.floor(Math.random() * tiles.length),
 
-      tiles[tileIndex].querySelector(newSelector).className = newID;
-      tiles[tileIndex].classList.toggle('flipped');
-    };
+    // the index of the new class that should be applied to the tile
+    dataIndex = Math.floor(Math.random() * this.data.length),
+    isFlipped = tiles[tileIndex].classList.contains('flipped'),
+    oldSelector = isFlipped ? '.back figure' : '.front figure',
+    newSelector = isFlipped ? '.front figure'  : '.back figure',
+    newID = this.data[dataIndex];
 
-    /**
-     Stop auto-flipping tiles
-      */
-    window.Tiler.prototype.stop = function() {
-      if (! this.timeout) { return; }
-      window.clearTimeout(this.timeout);
-      this.timeout = null;
-    };
 
-    /**
-     Begin auto-flipping tiles (flipping one immediately) at periodic interval
-      */
-    window.Tiler.prototype.start = function() {
 
-      // if timeout is already set, no further work is needed
-      if (this.timeout) { return; }
+    if (this.hovered) {
+      console.log('hovered:' + this.hovered);
+    }
 
-      if (! this.root.classList.contains('init')) {
-        this.root.classList.add('init');
-      }
+    // notify event listeners
+    if (this.events && this.events.flip) {
+      this.events.flip(tiles[tileIndex].querySelector(oldSelector).className, newID);
+    }
 
-      this.flip();
+    tiles[tileIndex].querySelector(newSelector).className = newID;
+    tiles[tileIndex].classList.toggle('flipped');
+  };
 
-      // flip
-      this.timeout = window.setInterval(function() {
-        var scope = arguments[0];
-        scope.flip();
-      }, this.interval, this);
-    };
+  /**
+   Stop auto-flipping tiles
+    */
+  window.Tiler.prototype.stop = function() {
+    if (! this.timeout) { return; }
+    window.clearTimeout(this.timeout);
+    this.timeout = null;
+  };
 
-    /**
-      Stop autoplay if enabled; begin autoplaying if it's not enabled
-     */
-    window.Tiler.prototype.toggle = function() {
-      if (this.timeout) {
-        this.stop();
-      }
-      else {
-        this.start();
-      }
-    };
+  /**
+   Begin auto-flipping tiles (flipping one immediately) at periodic interval
+    */
+  window.Tiler.prototype.start = function() {
 
-    /**
-      Clean up
-     */
-    window.Tiler.prototype.destroy = function() {
+    // if timeout is already set, no further work is needed
+    if (this.timeout) { return; }
+
+    if (! this.root.classList.contains('init')) {
+      this.root.classList.add('init');
+    }
+
+    this.flip();
+
+    // flip
+    this.timeout = window.setInterval(function() {
+      var scope = arguments[0];
+      scope.flip();
+    }, this.interval, this);
+  };
+
+  /**
+    Stop autoplay if enabled; begin autoplaying if it's not enabled
+   */
+  window.Tiler.prototype.toggle = function() {
+    if (this.timeout) {
       this.stop();
-      this.root.innerHTML = '';
-      this.root = null;
-      this.events = null;
-      this.data = null;
-    };
+    }
+    else {
+      this.start();
+    }
+  };
+
+  /**
+    Clean up
+   */
+  window.Tiler.prototype.destroy = function() {
+    this.stop();
+    this.root.innerHTML = '';
+    this.root = null;
+    this.events = null;
+    this.data = null;
+  };
 
   /**
    * Return a string representation of the instance
