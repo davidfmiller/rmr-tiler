@@ -254,10 +254,9 @@
     newSelector = isFlipped ? '.front figure'  : '.back figure',
     newID = this.data[dataIndex];
 
-
-
-    if (this.hovered) {
-      console.log('hovered:' + this.hovered);
+    // 
+    if (this.hovered >= 0) {
+//      console.log('hovered:' + this.hovered);
     }
 
     // notify event listeners
