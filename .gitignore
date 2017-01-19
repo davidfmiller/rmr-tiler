@@ -6,8 +6,8 @@ npm-debug.log
 # compiled files/libs
 *.pyc
 build
-docs/tiler.css
-docs/tiler.js
+docs/*.css
+docs/*.js
 node_modules
 bower_components
 *.sass-cache*

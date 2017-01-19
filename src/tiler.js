@@ -79,7 +79,6 @@
     width = 0,
     height = 0,
     dimension = 0,
-    numberOfTiles = 0,
     tile = null,
     index = 0,
     defaultConfig = {
@@ -178,16 +177,17 @@
 
     this.root.innerHTML = '';
 
-    // calculate necessary dimensions & 
+    // calculate necessary dimensions
     styles = window.getComputedStyle(node);
     width = parseInt(styles.width);
     height = parseInt(styles.height);
     dimension = gcd(width, height) / config.scale;
-    numberOfTiles = width * height / dimension / dimension;
 
-    this.tilesPerRow = 0;
+    this.numberOfTiles = width * height / dimension / dimension;
+    this.tilesPerRow = 1;
+    this.tilesPerColumn = 1;
 
-    for (i = 0; i < numberOfTiles; i++) {
+    for (i = 0; i < this.numberOfTiles; i++) {
 
       tile = document.createElement('div');
       tile.className = 'container off';
@@ -200,14 +200,16 @@
       // add necessary class to tile if constrain is enabled
       if (config.constrain && config.zoom) {
         if (i === 0)                                                { tile.className += ' topleft'; }
-        else if (i === numberOfTiles - 1)                           { tile.className += ' bottomright'; }
+        else if (i === this.numberOfTiles - 1)                           { tile.className += ' bottomright'; }
         else if (i === (width / dimension) - 1)                     { tile.className += ' topright'; this.tilesPerRow = i + 1; }
-        else if (i % (width / dimension) === 0  && (numberOfTiles - i == (width/dimension))) { tile.className += ' bottomleft'; }
+        else if (i % (width / dimension) === 0  && (this.numberOfTiles - i == (width/dimension))) { tile.className += ' bottomleft'; }
         else if (i < (width / dimension))                          { tile.className += ' top'; }
-        else if (i > numberOfTiles - 1 - (width / dimension))      { tile.className += ' bottom'; }
+        else if (i > this.numberOfTiles - 1 - (width / dimension))      { tile.className += ' bottom'; }
         else if (i % (width / dimension) === 0)                     { tile.className += ' left'; }
         else if (i % (width / dimension) === width / dimension - 1) { tile.className += ' right'; }
       }
+
+      this.tilesPerColumn = this.numberOfTiles / this.tilesPerRow;
 
       // add necessary children & dimensions 
       tile.innerHTML = '<div class="tile"><section class="front"><figure></figure></section><section class="back"><figure></figure></section>';
@@ -232,8 +234,57 @@
     });
 
     if (config.autoStart) {
-      window.setTimeout(function() { arguments[0].toggle(); }, this.interval + config.displayDelay * numberOfTiles, this);
+      window.setTimeout(function() { arguments[0].toggle(); }, this.interval + config.displayDelay * this.numberOfTiles, this);
     }
+  };
+
+  /**
+   Calculate the x and y location of an index
+   
+   @param index {Int}
+   @return array containing two integers, first integer being the 0-based row for the index, second integer being the 0-based column index
+   */
+  window.Tiler.prototype.positionForIndex = function(index) {
+
+    if (index < 0 || index >= this.numberOfTiles) {
+      throw new Error('invalid index! ' + index);
+    }
+
+    var
+    row = parseInt(index / this.tilesPerRow, 10),
+    column = index % this.tilesPerRow;
+
+    return [row, column];
+  };
+
+
+  window.Tiler.prototype.newTileIndex = function() {
+
+    var $ = this;
+    var randomizer = function() {
+      return Math.floor(Math.random() * $.numberOfTiles);
+    };
+
+    var index = randomizer();
+
+    // ensure the new index won't conflict with the currently zoomed tile (if applicable)
+    if (
+      this.zoom && this.hovered >= 0 && (this.tilesPerRow > 3 && this.tilesPerColumn > 3)
+    ) {
+      do {
+
+        index = randomizer();
+
+        var
+        newPosition = this.positionForIndex(index),
+        currentPosition = this.positionForIndex(this.hovered);
+
+       } while ( (newPosition[0] <= currentPosition[0] + 1 && newPosition[0] >= currentPosition[0] - 1)
+        &&
+       (newPosition[1] <= currentPosition[1] + 1 && newPosition[1] >= currentPosition[1] - 1) );
+    }
+
+    return index;
   };
 
   /**
@@ -244,8 +295,8 @@
     var
     tiles = this.root.querySelectorAll('.tile'),
 
-    // the index of the tile that should be flipped
-    tileIndex = Math.floor(Math.random() * tiles.length),
+    // the index of the new tile that should be flipped
+    tileIndex = this.newTileIndex(),
 
     // the index of the new class that should be applied to the tile
     dataIndex = Math.floor(Math.random() * this.data.length),
@@ -254,10 +305,8 @@
     newSelector = isFlipped ? '.front figure'  : '.back figure',
     newID = this.data[dataIndex];
 
-    // 
-    if (this.hovered >= 0) {
-//      console.log('hovered:' + this.hovered);
-    }
+//    console.log(this.numberOfRows, this.numberOfColumns);
+
 
     // notify event listeners
     if (this.events && this.events.flip) {
