@@ -276,7 +276,6 @@
     currentPosition = this.hovered >= 0 ? this.positionForIndex(this.hovered) : [0,0];
 
     // try to ensure the new index won't conflict with the currently zoomed tile (if applicable)... 
-    // generate a new index up to 100
     if (
       this.zoom && this.hovered >= 0
     ) {
@@ -313,9 +312,6 @@
     oldSelector = isFlipped ? '.back figure' : '.front figure',
     newSelector = isFlipped ? '.front figure'  : '.back figure',
     newID = this.data[dataIndex];
-
-//    console.log(this.numberOfRows, this.numberOfColumns);
-
 
     // notify event listeners
     if (this.events && this.events.flip) {
