@@ -12,7 +12,10 @@
   var
 
   //
-  VERSION = '0.0.1',
+  VERSION = '0.0.2',
+
+  // maximum number of times a new random tile will be selected in an attempt to avoid being a neighbor of the currently zoomed tile (if applicable)
+  MAX_ITERATIONS = 100,
 
   /*
    * Merge two objects into one, values in b take precedence over values in a
@@ -154,6 +157,7 @@
     this.timeout = null;
     this.events = config.events;
     this.data = config.data;
+    this.zoom = config.zoom;
     this.hovered = -1;
 
     node = config.root ? (config.root instanceof HTMLElement ? config.root : document.querySelector(config.root)) : document.body;
@@ -167,7 +171,7 @@
     }
 
     this.root = node;
-    if (config.zoom) {
+    if (this.zoom) {
       this.root.classList.add('zoom');
     }
 
@@ -198,7 +202,7 @@
       });
 
       // add necessary class to tile if constrain is enabled
-      if (config.constrain && config.zoom) {
+      if (config.constrain && this.zoom) {
         if (i === 0)                                                { tile.className += ' topleft'; }
         else if (i === this.numberOfTiles - 1)                           { tile.className += ' bottomright'; }
         else if (i === (width / dimension) - 1)                     { tile.className += ' topright'; this.tilesPerRow = i + 1; }
@@ -257,29 +261,34 @@
     return [row, column];
   };
 
+  
 
   window.Tiler.prototype.newTileIndex = function() {
 
-    var $ = this;
-    var randomizer = function() {
+    var
+    $ = this,
+    randomizer = function() {
       return Math.floor(Math.random() * $.numberOfTiles);
-    };
+    },
+    index = randomizer(),
+    iterations = 0,
+    newPosition = this.positionForIndex(index),
+    currentPosition = this.hovered >= 0 ? this.positionForIndex(this.hovered) : [0,0];
 
-    var index = randomizer();
-
-    // ensure the new index won't conflict with the currently zoomed tile (if applicable)
+    // try to ensure the new index won't conflict with the currently zoomed tile (if applicable)... 
+    // generate a new index up to 100
     if (
-      this.zoom && this.hovered >= 0 && (this.tilesPerRow > 3 && this.tilesPerColumn > 3)
+      this.zoom && this.hovered >= 0
     ) {
       do {
 
         index = randomizer();
-
-        var
-        newPosition = this.positionForIndex(index),
+        newPosition = this.positionForIndex(index);
         currentPosition = this.positionForIndex(this.hovered);
 
-       } while ( (newPosition[0] <= currentPosition[0] + 1 && newPosition[0] >= currentPosition[0] - 1)
+        iterations++;
+
+       } while (iterations < MAX_ITERATIONS && (newPosition[0] <= currentPosition[0] + 1 && newPosition[0] >= currentPosition[0] - 1)
         &&
        (newPosition[1] <= currentPosition[1] + 1 && newPosition[1] >= currentPosition[1] - 1) );
     }

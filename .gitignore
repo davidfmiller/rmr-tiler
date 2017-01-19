@@ -7,7 +7,7 @@ npm-debug.log
 *.pyc
 build
 docs/*.css
-docs/*.js
+docs/tiler.js
 node_modules
 bower_components
 *.sass-cache*
