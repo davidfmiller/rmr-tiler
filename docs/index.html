@@ -49,6 +49,12 @@
 
 <div class="rmr-tiler"></div>
 
+<p>
+  
+</p>
+
+
+
 <p>View the <a href="https://github.com/davidfmiller/tiler/tree/master/src">source</a></p>
 
 <hr>
@@ -64,7 +70,6 @@
 document.addEventListener("DOMContentLoaded", function(event) { 
 
   var tile = new Tiler({root: '.rmr-tiler', scale: 3, autoStart : true, displayDelay : 10, zoom: true, constrain: true, debug : true, data : [
-
     't0',
     't1',
     't2',
@@ -80,9 +85,14 @@ document.addEventListener("DOMContentLoaded", function(event) {
     't12',
     't13',
     't14'
-
-  ], interval : 1000 } );
-
+  ],
+  events : {
+//    'flip' : function(index, back, front) { console.log('flipping from ' + back + ' to ' + front + ' on tile #' + index) },
+    'click' : function(index, id) { console.log('click: ' + id + ' on tile #' + index); },
+//    'hover' : function(index, id) { console.log('enter:' + id + ' on tile #' + index); }
+  
+  },
+  interval : 1000 } );
 });
 
 </script>

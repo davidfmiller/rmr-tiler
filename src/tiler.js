@@ -141,7 +141,7 @@
           @param back - old id of the tile (flipped out)
           @param front - new id of the tile (flipped in)
          */
-        flip : function(back, front) {
+        flip : function(index, back, front) {
           //console.log('flip ' + back + ' ' + front);
         }
       }
@@ -177,6 +177,9 @@
 
     this.root.addEventListener('mouseleave', function(event) {
       $.hovered = -1;
+      if ($.events && $.events.hover) {
+        $.events.hover(-1, null);
+      }
     });
 
     this.root.innerHTML = '';
@@ -199,6 +202,9 @@
 
       tile.addEventListener('mouseenter', function(event) {
         $.hovered = event.target.getAttribute('data-tiler');
+        if ($.events && $.events.hover) {
+          $.events.hover($.hovered, $.data[$.hovered]);
+        }
       });
 
       // add necessary class to tile if constrain is enabled
@@ -232,8 +238,12 @@
     }
 
     this.root.addEventListener('click', function(e) {
-      if ($.events && $.events.on) {
-        $.events.click(e.target.className);
+      if ($.events && $.events.click) {
+        var n = e.target;
+        while (! n.classList.contains('container')) {
+          n = n.parentNode;
+        }
+        $.events.click(parseInt(n.getAttribute('data-tiler'), 10), e.target.className);
       }
     });
 
@@ -315,7 +325,7 @@
 
     // notify event listeners
     if (this.events && this.events.flip) {
-      this.events.flip(tiles[tileIndex].querySelector(oldSelector).className, newID);
+      this.events.flip(tileIndex, tiles[tileIndex].querySelector(oldSelector).className, newID);
     }
 
     tiles[tileIndex].querySelector(newSelector).className = newID;
