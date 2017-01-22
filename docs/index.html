@@ -53,6 +53,13 @@
   
 </p>
 
+<form action="" method="GET">
+  <select>
+    
+  </select>
+  <input type="number" name="scale" value="2" min="1" max"4">
+  <label><input type="checkbox" name="zoom" value="1" checked> Zoom</label>
+</form>
 
 
 <p>View the <a href="https://github.com/davidfmiller/tiler/tree/master/src">source</a></p>
@@ -61,38 +68,60 @@
 
 <p>Built by <a href="http://readmeansrun.com" title="READMEANSRUN">RMR</a>, hosted on <a href="https://github.com/davidfmiller/tiler" title="GitHub">GitHub</a></p>
 
-
-
 </body>
 
 <script src="tiler.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function(event) { 
 
-  var tile = new Tiler({root: '.rmr-tiler', scale: 3, autoStart : true, displayDelay : 10, zoom: true, constrain: true, debug : true, data : [
-    't0',
-    't1',
-    't2',
-    't3',
-    't4',
-    't5',
-    't6',
-    't7',
-    't8',
-    't9',
-    't10',
-    't11',
-    't12',
-    't13',
-    't14'
-  ],
-  events : {
-//    'flip' : function(index, back, front) { console.log('flipping from ' + back + ' to ' + front + ' on tile #' + index) },
-    'click' : function(index, id) { console.log('click: ' + id + ' on tile #' + index); },
-//    'hover' : function(index, id) { console.log('enter:' + id + ' on tile #' + index); }
+  var
+  tile = null,
+  count = 0;
+
+  var render = function() {
+
+    if (tile != null) {
+      tile.destroy();
+    }
+
+    tile = new Tiler({root: '.rmr-tiler', scale: parseInt(document.querySelector('input[name=scale]').value, 10), autoStart : true, displayDelay : 10, zoom: document.querySelector('input[name=zoom]').checked, constrain: false, debug : true, data : [
+      't0',
+      't1',
+      't2',
+      't3',
+      't4',
+      't5',
+      't6',
+      't7',
+      't8',
+      't9',
+      't10',
+      't11',
+      't12',
+      't13',
+      't14'
+    ],
+    events : {
+  //    'flip' : function(index, back, front) { console.log('flipping from ' + back + ' to ' + front + ' on tile #' + index) },
+      'click' : function(index, id) { console.log('click: ' + id + ' on tile #' + index); },
+  //    'hover' : function(index, id) { console.log('enter:' + id + ' on tile #' + index); }
   
-  },
-  interval : 1000 } );
+    },
+    interval : 1000 } );
+    count++;
+  };
+
+  render();
+
+  var
+  inputs = document.querySelectorAll('input'),
+  i = 0;
+
+  for (; i < inputs.length; i++) {
+    inputs.item(i).addEventListener('change', function(event) {
+      render();
+    });
+  }
 });
 
 </script>

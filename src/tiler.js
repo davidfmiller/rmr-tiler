@@ -159,6 +159,7 @@
     this.data = config.data;
     this.zoom = config.zoom;
     this.hovered = -1;
+    this.listeners = {};
 
     node = config.root ? (config.root instanceof HTMLElement ? config.root : document.querySelector(config.root)) : document.body;
 
@@ -171,11 +172,14 @@
     }
 
     this.root = node;
+    //this.root.innerHTML = '';
     if (this.zoom) {
       this.root.classList.add('zoom');
+    } else {
+      this.root.classList.remove('zoom');
     }
 
-    this.root.addEventListener('mouseleave', function(event) {
+    this.listeners.mouseleave = this.root.addEventListener('mouseleave', function(event) {
       $.hovered = -1;
       if ($.events && $.events.hover) {
         $.events.hover(-1, null);
@@ -237,7 +241,7 @@
       window.setTimeout(function() {  this.classList.remove('off'); }.bind(tile), i * config.displayDelay);
     }
 
-    this.root.addEventListener('click', function(e) {
+    this.listeners.click = this.root.addEventListener('click', function(e) {
       if ($.events && $.events.click) {
         var n = e.target;
         while (! n.classList.contains('container')) {
@@ -271,7 +275,18 @@
     return [row, column];
   };
 
-  
+  window.Tiler.prototype.destroy = function() {
+
+    this.root.removeEventListener('click', this.listeners.click);
+    this.root.removeEventListener('mouseleave', this.listeners.mouseleave);
+
+    this.stop();
+    this.numberOfTiles = this.tilesPerRow = this.tilesPerColumn = 0;
+    this.data = [];
+    this.zoom = false;
+    this.hovered = -1;
+    //this.root = null;
+  };
 
   window.Tiler.prototype.newTileIndex = function() {
 
@@ -378,11 +393,14 @@
     Clean up
    */
   window.Tiler.prototype.destroy = function() {
+
     this.stop();
     this.root.innerHTML = '';
     this.root = null;
     this.events = null;
     this.data = null;
+    window.clearTimeout(this.timeout);
+    this.timeout = null;
   };
 
   /**
