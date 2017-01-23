@@ -156,10 +156,6 @@
     this.hovered = -1;
     this.listeners = {};
 
-    if (config.debug) {
-      console.log(config);
-    }
-
     node = config.root ? (config.root instanceof HTMLElement ? config.root : document.querySelector(config.root)) : document.body;
 
     if (! node) {

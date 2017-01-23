@@ -92,7 +92,7 @@
     <label><input type="checkbox" name="zoom" value="1" checked> Zoom</label>
     <label><input type="checkbox" name="auto-start" value="1" checked> Auto-start</label>
     <label><input type="checkbox" name="constrain" value="1" checked> Constrain</label>
-    <button type="submit" name="toggle">Toggle</button>
+    <button type="submit" name="toggle">Toggle auto-flip</button>
   </fieldset>
 </form>
 
@@ -125,7 +125,6 @@ document.addEventListener('DOMContentLoaded', function(event) {
       autoStart : document.querySelector('input[name=auto-start]').checked,
       zoom: document.querySelector('input[name=zoom]').checked,
       constrain: document.querySelector('input[name=constrain]').checked,
-      debug : true,
       data : [
       't0',
       't1',
