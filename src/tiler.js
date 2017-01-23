@@ -397,6 +397,7 @@
     this.stop();
     this.root.innerHTML = '';
     this.root = null;
+    this.listeners = null;
     this.events = null;
     this.data = null;
     window.clearTimeout(this.timeout);
