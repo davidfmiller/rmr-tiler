@@ -91,6 +91,7 @@
     </label>
     <label><input type="checkbox" name="zoom" value="1" checked> Zoom</label>
     <label><input type="checkbox" name="auto-start" value="1" checked> Auto-start</label>
+    <label><input type="checkbox" name="constrain" value="1" checked> Constrain</label>
     <button type="submit" name="toggle">Toggle</button>
   </fieldset>
 </form>
@@ -123,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
       scale: parseInt(document.querySelector('input[name=scale]').value, 10),
       autoStart : document.querySelector('input[name=auto-start]').checked,
       zoom: document.querySelector('input[name=zoom]').checked,
-      constrain: true,
+      constrain: document.querySelector('input[name=constrain]').checked,
       debug : true,
       data : [
       't0',

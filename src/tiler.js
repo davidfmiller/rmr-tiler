@@ -206,7 +206,7 @@
     for (i = 0; i < this.numberOfTiles; i++) {
 
       tile = document.createElement('div');
-      tile.className = 'container';
+      tile.className = 'rmr-container';
       tile.setAttribute('data-tiler', i);
 
       tile.addEventListener('mouseenter', function(event) {
@@ -231,14 +231,14 @@
       this.tilesPerColumn = this.numberOfTiles / this.tilesPerRow;
 
       // add necessary children & dimensions 
-      tile.innerHTML = '<div class="tile"><section class="tile-front"><figure></figure></section><section class="tile-back"><figure></figure></section>';
+      tile.innerHTML = '<div class="tile"><section class="rmr-tile-front"><figure></figure></section><section class="rmr-tile-back"><figure></figure></section>';
       setStyles(tile, { width : dimension + 'px', height : dimension + 'px' });
 
       // apply randomized classes from the data for 
       index = Math.floor(Math.random() * this.data.length);
-      tile.querySelector('.tile-front figure').className = this.data[index];
+      tile.querySelector('.rmr-tile-front figure').className = this.data[index];
       index = Math.floor(Math.random() * this.data.length);
-      tile.querySelector('.tile-back figure').className = this.data[index];
+      tile.querySelector('.rmr-tile-back figure').className = this.data[index];
 
       this.root.appendChild(tile);
 
@@ -249,7 +249,7 @@
     this.listeners.click = this.root.addEventListener('click', function(e) {
       if ($.events && $.events.click) {
         var n = e.target;
-        while (! n.classList.contains('container')) {
+        while (! n.classList.contains('rmr-container')) {
           n = n.parentNode;
         }
         $.events.click(parseInt(n.getAttribute('data-tiler'), 10), e.target.className);
@@ -341,8 +341,8 @@
     // the index of the new class that should be applied to the tile
     dataIndex = Math.floor(Math.random() * this.data.length),
     isFlipped = tiles[tileIndex].classList.contains('flipped'),
-    oldSelector = isFlipped ? '.tile-back figure' : '.tile-front figure',
-    newSelector = isFlipped ? '.tile-front figure'  : '.tile-back figure',
+    oldSelector = isFlipped ? '.rmr-tile-back figure' : '.rmr-tile-front figure',
+    newSelector = isFlipped ? '.rmr-tile-front figure'  : '.rmr-tile-back figure',
     newID = this.data[dataIndex];
 
     // notify event listeners
