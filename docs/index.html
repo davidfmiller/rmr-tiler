@@ -11,12 +11,12 @@
       width: 600px;
       height: 600px;
       margin: 0 auto;
-      transition: background 0.5s linear;
-      color: #fff;
+/*      transition: background 0.5s linear; */
+      background: #eee;
     }
 
     .rmr-tiler.init {
-      background: #eee;
+
     }
 
     .rmr-tiler figure {
@@ -39,26 +39,60 @@
     .t13 { background: #030d83 }
     .t14 { background: #030d83 }
 
+    form {
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      display: inline-block;
+      padding: 10px;
+    }
+
+    fieldset {
+      border: none;
+      padding: 0;
+    }
+
+    legend {
+      display: none;
+    }
+
+    input[type=number] {
+      border: none;
+      width: 30px;
+    }
+
+    label {
+      display: block;
+    }
+
   </style>
 </head>
 <body>
 
 <h1>Tiler</h1>
 
-<p>Tiler is a simple JavaScript &amp; CSS library for creating a rotating gallery of tiled content.</p>
+<p>Tiler is a simple JavaScript &amp; CSS library for creating a gallery of rotating tiled content.</p>
 
-<div class="rmr-tiler"></div>
+<div id="tiles"></div>
 
 <p>
   
 </p>
 
 <form action="" method="GET">
-  <select>
+  <fieldset>
+    <legend>Modify tiler&rsquo;s arguments:</legend>
+    <!--
+      <select>
     
-  </select>
-  <input type="number" name="scale" value="2" min="1" max"4">
-  <label><input type="checkbox" name="zoom" value="1" checked> Zoom</label>
+      </select>
+    -->
+    <label>Scale:
+      <input type="number" name="scale" value="4" min="1" max="10">
+    </label>
+    <label><input type="checkbox" name="zoom" value="1" checked> Zoom</label>
+    <label><input type="checkbox" name="auto-start" value="1" checked> Auto-start</label>
+    <button type="submit" name="toggle">Toggle</button>
+  </fieldset>
 </form>
 
 
@@ -72,19 +106,26 @@
 
 <script src="tiler.js"></script>
 <script>
-document.addEventListener("DOMContentLoaded", function(event) { 
+document.addEventListener('DOMContentLoaded', function(event) { 
 
   var
+  i = 0,
+  inputs = document.querySelectorAll('input'),
   tile = null,
-  count = 0;
-
-  var render = function() {
+  render = function() {
 
     if (tile != null) {
       tile.destroy();
     }
 
-    tile = new Tiler({root: '.rmr-tiler', scale: parseInt(document.querySelector('input[name=scale]').value, 10), autoStart : true, displayDelay : 10, zoom: document.querySelector('input[name=zoom]').checked, constrain: false, debug : true, data : [
+    tile = new Tiler({
+      root: '#tiles',
+      scale: parseInt(document.querySelector('input[name=scale]').value, 10),
+      autoStart : document.querySelector('input[name=auto-start]').checked,
+      zoom: document.querySelector('input[name=zoom]').checked,
+      constrain: true,
+      debug : true,
+      data : [
       't0',
       't1',
       't2',
@@ -102,20 +143,21 @@ document.addEventListener("DOMContentLoaded", function(event) {
       't14'
     ],
     events : {
-  //    'flip' : function(index, back, front) { console.log('flipping from ' + back + ' to ' + front + ' on tile #' + index) },
+      'flip' : function(index, back, front) { console.log('flipping from ' + back + ' to ' + front + ' on tile #' + index) },
       'click' : function(index, id) { console.log('click: ' + id + ' on tile #' + index); },
-  //    'hover' : function(index, id) { console.log('enter:' + id + ' on tile #' + index); }
-  
+      'hover' : function(index, id) { console.log(id ? 'mouse enter:' + id + ' on tile #' + index : 'mouse exit'); }
     },
     interval : 1000 } );
-    count++;
   };
 
   render();
 
-  var
-  inputs = document.querySelectorAll('input'),
-  i = 0;
+  document.querySelector('form').addEventListener('submit', function(event) {
+    event.preventDefault();
+    if (tile) {
+      tile.toggle();
+    }
+  });
 
   for (; i < inputs.length; i++) {
     inputs.item(i).addEventListener('change', function(event) {

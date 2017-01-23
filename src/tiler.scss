@@ -31,17 +31,23 @@
   transform-origin: 100% 100%;
 }
 
-.rmr-tiler .off {
+.rmr-tiler {
   opacity: 0;
+  transition: opacity linear 0.5s;
+
 }
 
-.rmr-tiler > div {
+.rmr-tiler.rmr-init {
+  opacity: 1;
+}
+
+.rmr-tiler .container {
   float: left;
   position: relative;
   transition: 1s opacity linear, 0.1s transform linear; 
 }
 
-div.rmr-tiler.zoom .container:hover { /* .init*/
+div.rmr-tiler.rmr-zoom .container:hover { /* .init*/
   transform: scale(1.2);
   z-index: 2;
   box-shadow: 1px 1px 3px rgba(0,0,0,0.5);
@@ -76,6 +82,6 @@ div.rmr-tiler.zoom .container:hover { /* .init*/
   transform: rotateY( 180deg );
 }
 
-.rmr-tiler .back {
+.rmr-tiler .tile-back {
   transform: rotateY( 180deg );
 }

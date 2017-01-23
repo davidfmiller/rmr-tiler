@@ -102,11 +102,6 @@
       root : document.body,
 
       /**
-        Timed delay which must pass after display one tile after the previous has started loading
-       */
-      displayDelay : 25,
-
-      /**
         Begin flipping tiles after initialization is complete
        */
        autoStart : true,
@@ -161,6 +156,10 @@
     this.hovered = -1;
     this.listeners = {};
 
+    if (config.debug) {
+      console.log(config);
+    }
+
     node = config.root ? (config.root instanceof HTMLElement ? config.root : document.querySelector(config.root)) : document.body;
 
     if (! node) {
@@ -172,11 +171,17 @@
     }
 
     this.root = node;
-    //this.root.innerHTML = '';
+    this.root.innerHTML = '';
     if (this.zoom) {
-      this.root.classList.add('zoom');
+      this.root.classList.add('rmr-zoom');
     } else {
-      this.root.classList.remove('zoom');
+      this.root.classList.remove('rmr-zoom');
+    }
+
+    this.root.classList.remove('rmr-init');
+
+    if (! this.root.classList.contains('rmr-tiler')) {
+      this.root.classList.add('rmr-tiler');
     }
 
     this.listeners.mouseleave = this.root.addEventListener('mouseleave', function(event) {
@@ -201,7 +206,7 @@
     for (i = 0; i < this.numberOfTiles; i++) {
 
       tile = document.createElement('div');
-      tile.className = 'container off';
+      tile.className = 'container';
       tile.setAttribute('data-tiler', i);
 
       tile.addEventListener('mouseenter', function(event) {
@@ -226,19 +231,19 @@
       this.tilesPerColumn = this.numberOfTiles / this.tilesPerRow;
 
       // add necessary children & dimensions 
-      tile.innerHTML = '<div class="tile"><section class="front"><figure></figure></section><section class="back"><figure></figure></section>';
+      tile.innerHTML = '<div class="tile"><section class="tile-front"><figure></figure></section><section class="tile-back"><figure></figure></section>';
       setStyles(tile, { width : dimension + 'px', height : dimension + 'px' });
 
       // apply randomized classes from the data for 
       index = Math.floor(Math.random() * this.data.length);
-      tile.querySelector('.front figure').className = this.data[index];
+      tile.querySelector('.tile-front figure').className = this.data[index];
       index = Math.floor(Math.random() * this.data.length);
-      tile.querySelector('.back figure').className = this.data[index];
+      tile.querySelector('.tile-back figure').className = this.data[index];
 
       this.root.appendChild(tile);
 
-      // 
-      window.setTimeout(function() {  this.classList.remove('off'); }.bind(tile), i * config.displayDelay);
+      //
+//      window.setTimeout(function() {  this.classList.remove('off'); }.bind(tile), i * config.displayDelay);
     }
 
     this.listeners.click = this.root.addEventListener('click', function(e) {
@@ -251,8 +256,10 @@
       }
     });
 
+    this.root.classList.add('rmr-init');
+
     if (config.autoStart) {
-      window.setTimeout(function() { arguments[0].toggle(); }, this.interval + config.displayDelay * this.numberOfTiles, this);
+      window.setTimeout(function() { arguments[0].toggle(); }, this.interval, this);
     }
   };
 
@@ -334,8 +341,8 @@
     // the index of the new class that should be applied to the tile
     dataIndex = Math.floor(Math.random() * this.data.length),
     isFlipped = tiles[tileIndex].classList.contains('flipped'),
-    oldSelector = isFlipped ? '.back figure' : '.front figure',
-    newSelector = isFlipped ? '.front figure'  : '.back figure',
+    oldSelector = isFlipped ? '.tile-back figure' : '.tile-front figure',
+    newSelector = isFlipped ? '.tile-front figure'  : '.tile-back figure',
     newID = this.data[dataIndex];
 
     // notify event listeners
@@ -361,12 +368,10 @@
     */
   window.Tiler.prototype.start = function() {
 
+    if (! this.root) { return; }
+
     // if timeout is already set, no further work is needed
     if (this.timeout) { return; }
-
-    if (! this.root.classList.contains('init')) {
-      this.root.classList.add('init');
-    }
 
     this.flip();
 
