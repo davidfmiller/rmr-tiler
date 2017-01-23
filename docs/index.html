@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Tiler</title>
+  <title>Tiler v0.0.3</title>
   <link rel="stylesheet" type="text/css" href="https://davidfmiller.github.io/man/man.css">
   <link rel="stylesheet" type="text/css" href="tiler.css">
   <style>
@@ -68,7 +68,7 @@
 </head>
 <body>
 
-<h1>Tiler</h1>
+<h1>Tiler v0.0.3</h1>
 
 <p>Tiler is a simple JavaScript &amp; CSS library for creating a gallery of rotating tiled content.</p>
 
@@ -143,9 +143,9 @@ document.addEventListener('DOMContentLoaded', function(event) {
       't14'
     ],
     events : {
-      'flip' : function(index, back, front) { console.log('flipping from ' + back + ' to ' + front + ' on tile #' + index) },
-      'click' : function(index, id) { console.log('click: ' + id + ' on tile #' + index); },
-      'hover' : function(index, id) { console.log(id ? 'mouse enter:' + id + ' on tile #' + index : 'mouse exit'); }
+      'flip'  : function(tiler, index, back, front) { console.log(tiler + ' flipping from ' + back + ' to ' + front + ' on tile #' + index) },
+      'click' : function(tiler, index, id) { console.log(tiler + ' click: ' + id + ' on tile #' + index); },
+      'hover' : function(tiler, index, id) { console.log(tiler + (id ? ' mouse enter:' + id + ' on tile #' + index : ' mouse exit')); }
     },
     interval : 1000 } );
   };

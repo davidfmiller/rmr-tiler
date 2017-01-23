@@ -12,7 +12,7 @@
   var
 
   //
-  VERSION = '0.0.2',
+  VERSION = '0.0.3',
 
   // maximum number of times a new random tile will be selected in an attempt to avoid being a neighbor of the currently zoomed tile (if applicable)
   MAX_ITERATIONS = 100,
@@ -183,7 +183,7 @@
     this.listeners.mouseleave = this.root.addEventListener('mouseleave', function(event) {
       $.hovered = -1;
       if ($.events && $.events.hover) {
-        $.events.hover(-1, null);
+        $.events.hover($, -1, null);
       }
     });
 
@@ -208,7 +208,7 @@
       tile.addEventListener('mouseenter', function(event) {
         $.hovered = event.target.getAttribute('data-tiler');
         if ($.events && $.events.hover) {
-          $.events.hover($.hovered, $.data[$.hovered]);
+          $.events.hover($, $.hovered, $.data[$.hovered]);
         }
       });
 
@@ -249,7 +249,7 @@
         while (! n.classList.contains('rmr-container')) {
           n = n.parentNode;
         }
-        $.events.click(parseInt(n.getAttribute('data-tiler'), 10), e.target.className);
+        $.events.click($, parseInt(n.getAttribute('data-tiler'), 10), e.target.className);
       }
     });
 
@@ -344,7 +344,7 @@
 
     // notify event listeners
     if (this.events && this.events.flip) {
-      this.events.flip(tileIndex, tiles[tileIndex].querySelector(oldSelector).className, newID);
+      this.events.flip(this, tileIndex, tiles[tileIndex].querySelector(oldSelector).className, newID);
     }
 
     tiles[tileIndex].querySelector(newSelector).className = newID;
@@ -412,7 +412,7 @@
    * @return {String}
    */
   window.Tiler.prototype.toString = function() {
-    return 'Tiler ' + JSON.stringify({root : '' + this.root, delay : this.interval, data : this.data });
+    return 'Tiler ' + JSON.stringify({root : '' + this.root, delay : this.interval });
   };
 
 }());
