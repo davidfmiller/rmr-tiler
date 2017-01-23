@@ -218,20 +218,21 @@
 
       // add necessary class to tile if constrain is enabled
       if (config.constrain && this.zoom) {
-        if (i === 0)                                                { tile.className += ' topleft'; }
+        if (i === 0)                                                     { tile.className += ' topleft'; }
         else if (i === this.numberOfTiles - 1)                           { tile.className += ' bottomright'; }
-        else if (i === (width / dimension) - 1)                     { tile.className += ' topright'; this.tilesPerRow = i + 1; }
+        else if (i === (width / dimension) - 1)                          { tile.className += ' topright'; }
         else if (i % (width / dimension) === 0  && (this.numberOfTiles - i == (width/dimension))) { tile.className += ' bottomleft'; }
-        else if (i < (width / dimension))                          { tile.className += ' top'; }
-        else if (i > this.numberOfTiles - 1 - (width / dimension))      { tile.className += ' bottom'; }
-        else if (i % (width / dimension) === 0)                     { tile.className += ' left'; }
-        else if (i % (width / dimension) === width / dimension - 1) { tile.className += ' right'; }
+        else if (i < (width / dimension))                                { tile.className += ' top'; }
+        else if (i > this.numberOfTiles - 1 - (width / dimension))       { tile.className += ' bottom'; }
+        else if (i % (width / dimension) === 0)                          { tile.className += ' left'; }
+        else if (i % (width / dimension) === width / dimension - 1)      { tile.className += ' right'; }
       }
 
-      this.tilesPerColumn = this.numberOfTiles / this.tilesPerRow;
+      this.tilesPerRow = parseInt(width / dimension, 10);
+      this.tilesPerColumn = parseInt(this.numberOfTiles / this.tilesPerRow, 10);
 
       // add necessary children & dimensions 
-      tile.innerHTML = '<div class="tile"><section class="rmr-tile-front"><figure></figure></section><section class="rmr-tile-back"><figure></figure></section>';
+      tile.innerHTML = '<div class="rmr-tile"><section class="rmr-tile-front"><figure></figure></section><section class="rmr-tile-back"><figure></figure></section>';
       setStyles(tile, { width : dimension + 'px', height : dimension + 'px' });
 
       // apply randomized classes from the data for 
@@ -333,7 +334,7 @@
   window.Tiler.prototype.flip = function() {
 
     var
-    tiles = this.root.querySelectorAll('.tile'),
+    tiles = this.root.querySelectorAll('.rmr-tile'),
 
     // the index of the new tile that should be flipped
     tileIndex = this.newTileIndex(),
