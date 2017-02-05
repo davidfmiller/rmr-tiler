@@ -238,8 +238,9 @@
       index = Math.floor(Math.random() * dataSource.length);
       tile.querySelector('.rmr-tile-front figure').className = dataSource[index];
 
-      if (this.numberOfTiles <= this.data.length) {
-        dataSource.splice(index, 1);
+      dataSource.splice(index, 1);
+      if (dataSource.length == 0) {
+        dataSource = this.data.slice();
       }
 
       this.root.appendChild(tile);
