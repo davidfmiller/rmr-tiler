@@ -155,6 +155,7 @@
     this.zoom = config.zoom;
     this.hovered = -1;
     this.listeners = {};
+    this.tileIdentifiers = [];
 
     node = config.root ? (config.root instanceof HTMLElement ? config.root : document.querySelector(config.root)) : document.body;
 
@@ -199,6 +200,9 @@
     this.tilesPerRow = 1;
     this.tilesPerColumn = 1;
 
+    var dataSource = this.data.slice();
+//    console.log(this.numberOfTiles, this.data.length);
+
     for (i = 0; i < this.numberOfTiles; i++) {
 
       tile = document.createElement('div');
@@ -232,15 +236,16 @@
       setStyles(tile, { width : dimension + 'px', height : dimension + 'px' });
 
       // apply randomized classes from the data for 
-      index = Math.floor(Math.random() * this.data.length);
-      tile.querySelector('.rmr-tile-front figure').className = this.data[index];
-      index = Math.floor(Math.random() * this.data.length);
-      tile.querySelector('.rmr-tile-back figure').className = this.data[index];
+      index = Math.floor(Math.random() * dataSource.length);
+      tile.querySelector('.rmr-tile-front figure').className = dataSource[index];
+//      index = Math.floor(Math.random() * this.data.length);
+//      tile.querySelector('.rmr-tile-back figure').className = dataSource.[index];
+
+      if (this.numberOfTiles <= this.data.length) {
+        dataSource.splice(index, 1);
+      }
 
       this.root.appendChild(tile);
-
-      //
-//      window.setTimeout(function() {  this.classList.remove('off'); }.bind(tile), i * config.displayDelay);
     }
 
     this.listeners.click = this.root.addEventListener('click', function(e) {

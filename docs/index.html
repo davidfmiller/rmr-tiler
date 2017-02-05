@@ -36,7 +36,7 @@
     .t10 { background: #9f41d6 }
     .t11 { background: #19ac1c }
     .t12 { background: #6dfd46 }
-    .t13 { background: #030d83 }
+    .t13 { background: #ddd }
     .t14 { background: #030d83 }
 
     form {
@@ -90,8 +90,8 @@
       <input type="number" name="scale" value="2" min="1" max="10">
     </label>
     <label><input type="checkbox" name="zoom" value="1" checked> Zoom</label>
-    <label><input type="checkbox" name="auto-start" value="1" checked> Auto-start</label>
     <label><input type="checkbox" name="constrain" value="1" checked> Constrain</label>
+    <label><input type="checkbox" name="auto-start" value="1" checked> Auto-start</label>
     <button type="submit" name="toggle">Toggle auto-flip</button>
   </fieldset>
 </form>
@@ -148,6 +148,9 @@ document.addEventListener('DOMContentLoaded', function(event) {
       'hover' : function(tiler, index, id) { console.log(tiler + (id ? ' mouse enter:' + id + ' on tile #' + index : ' mouse exit')); }
     },
     interval : 1000 } );
+
+    var constrain = document.querySelector('input[name=constrain]');
+    constrain.disabled = ! document.querySelector('input[name=zoom]').checked;
   };
 
   render();
