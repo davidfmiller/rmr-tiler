@@ -63,13 +63,19 @@
 
     label {
       display: block;
+      margin: 5px 0;
+    }
+
+    label span {
+      display: inline-block;
+      min-width: 6em;
     }
 
   </style>
 </head>
 <body>
 
-<h1>Tiler v0.0.3</h1>
+<h1>Tiler v0.0.4</h1>
 
 <p>Tiler is an easy-to-use JavaScript &amp; CSS library for creating galleries of rotating (tiled) content.</p>
 
@@ -87,11 +93,12 @@
     
       </select>
     -->
-    <label>Scale:
+    <label>
+      <span>Scale:</span>
       <input type="number" name="scale" value="2" min="1" max="10">
     </label>
     <label>
-      Interval:
+      <span>Interval:</span>
       <select name="interval">
         <option value="500">0.5s</option>
         <option value="1000" selected>1s</option>
