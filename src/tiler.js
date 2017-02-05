@@ -201,7 +201,6 @@
     this.tilesPerColumn = 1;
 
     var dataSource = this.data.slice();
-//    console.log(this.numberOfTiles, this.data.length);
 
     for (i = 0; i < this.numberOfTiles; i++) {
 
@@ -235,11 +234,9 @@
       tile.innerHTML = '<div class="rmr-tile"><section class="rmr-tile-front"><figure></figure></section><section class="rmr-tile-back"><figure></figure></section>';
       setStyles(tile, { width : dimension + 'px', height : dimension + 'px' });
 
-      // apply randomized classes from the data for 
+      // apply randomized classes from the data for the tile fronts
       index = Math.floor(Math.random() * dataSource.length);
       tile.querySelector('.rmr-tile-front figure').className = dataSource[index];
-//      index = Math.floor(Math.random() * this.data.length);
-//      tile.querySelector('.rmr-tile-back figure').className = dataSource.[index];
 
       if (this.numberOfTiles <= this.data.length) {
         dataSource.splice(index, 1);
