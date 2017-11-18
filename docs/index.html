@@ -23,6 +23,7 @@
       background-size: 100%;
     }
 
+    /*  styles  */
     .t0 { background: url(data:image/svg+xml;charset=UTF-8;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgc3R5bGU9ImJhY2tncm91bmQ6IzAwMCI+PHRpdGxlPjE8L3RpdGxlPjxwYXRoIGQ9Ik01MC4wNiA3MGg4LjgyVjMxaC03LjVMNDEgMzUuOGwxLjUgNi44NCA3LjQ0LTMuNTRoLjEyeiIgZmlsbD0iI0ZGRiIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9zdmc+); }
     .t1 { background: url(data:image/svg+xml;charset=UTF-8;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgc3R5bGU9ImJhY2tncm91bmQ6IzA4MDgwOCI+PHRpdGxlPjI8L3RpdGxlPjxwYXRoIGQ9Ik02Mi42NiA2OS42NnYtNy41SDQ3Ljl2LS4xMmwzLjYtM0M1Ny4yIDU0IDYxLjg4IDQ4Ljc4IDYxLjg4IDQyLjE4YzAtNy4wMi00LjgtMTIuMTgtMTMuNjgtMTIuMTgtNS4yMiAwLTkuODQgMS44LTEyLjcyIDQuMDJsMi41OCA2LjQ4YzIuMDQtMS41IDQuOTgtMy4xOCA4LjM0LTMuMTggNC41IDAgNi4zNiAyLjUyIDYuMzYgNS43LS4wNiA0LjU2LTQuMiA4Ljk0LTEyLjc4IDE2LjYyTDM1IDY0LjE0djUuNTJoMjcuNjZ6IiBmaWxsPSIjRkZGIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48L3N2Zz4=); }
     .t2 { background: url(data:image/svg+xml;charset=UTF-8;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgc3R5bGU9ImJhY2tncm91bmQ6IzExMSI+PHRpdGxlPjM8L3RpdGxlPjxwYXRoIGQ9Ik0zNCA2Ny42MmMyLjI4IDEuMzggNi41NCAyLjcgMTEuNTggMi43IDkuOSAwIDE1Ljk2LTUuMDQgMTUuOTYtMTEuODggMC01LjE2LTMuNzgtOC43LTguNDYtOS41NHYtLjEyYzQuOC0xLjYyIDcuMTQtNC45MiA3LjE0LTkuMDYgMC01LjM0LTQuNjItOS43Mi0xMi45LTkuNzItNS4xIDAtOS43MiAxLjQ0LTEyLjA2IDIuOTRsMS44NiA2LjZjMS41Ni0uOTYgNC45Mi0yLjM0IDguMS0yLjM0IDMuOSAwIDUuNzYgMS43NCA1Ljc2IDQuMDggMCAzLjMtMy44NCA0LjUtNi45IDQuNWgtMy42djYuNTRoMy43MmM0LjAyIDAgNy44NiAxLjc0IDcuODYgNS42NCAwIDIuODgtMi40IDUuMTYtNy4xNCA1LjE2LTMuNzIgMC03LjQ0LTEuNS05LjA2LTIuNEwzNCA2Ny42MnoiIGZpbGw9IiNGRkYiIGZpbGwtcnVsZT0iZXZlbm9kZCIvPjwvc3ZnPg==); }
@@ -121,7 +122,7 @@
 
 </body>
 
-<script src="tiler.js"></script>
+<script src="tiler.bundle.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function(event) { 
 
@@ -135,12 +136,24 @@ document.addEventListener('DOMContentLoaded', function(event) {
       tile.destroy();
     }
 
-    tile = new Tiler({
+    tile = new window.Tiler({
+
+      // containing node for the 
       root: '#tiles',
+
+      // # of tiles that should be placed in each square of the container
       scale: parseInt(document.querySelector('input[name=scale]').value, 10),
+
+      // should tiles start flipping automatically
       autoStart : document.querySelector('input[name=auto-start]').checked,
+
+      // should the tile under the cursor be enlarged?
       zoom: document.querySelector('input[name=zoom]').checked,
+
+      // if zoom is enabled, should the enlarged tile stay within the confines of the container?
       constrain: document.querySelector('input[name=constrain]').checked,
+
+      // array of classes items that will be chosen from 
       data : [
       't0',
       't1',
