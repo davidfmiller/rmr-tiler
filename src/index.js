@@ -2,10 +2,6 @@
 /* global document,window,HTMLElement */
 
 (function() {
-
   'use strict';
-  
   window.Tiler = require('./tiler');
-
-}());
-
+})();
