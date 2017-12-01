@@ -18,12 +18,21 @@
    * @return Object
    */
   merge = function(a, b) {
-    var o = {};
-    for (var i in a) {
+    const o = {};
+    let i;
+    for (i in a) {
+      if (! a.hasOwnProperty(i)) {
+        continue;
+      }
       o[i] = a[i];
     }
-    if (! b) { return o; }
+    if (! b) {
+      return o;
+    }
     for (i in b) {
+      if (! b.hasOwnProperty(i)) {
+        continue;
+      }
       o[i] = b[i];
     }
     return o;
@@ -32,9 +41,9 @@
   /**
    * Greatest common divisor
    *
-   * @param a
-   * @param b
-   * @return 
+   * @param {Number} a - first comparator
+   * @param {Number} b - second comparator
+   * @return {Number}
    */
   gcd = function(a, b) {
     if ( ! b) {
@@ -49,7 +58,10 @@
    * @param styles {Object}
    */
   setStyles  = function(node, styles) {
-    for (var i in styles) {
+    for (const i in styles) {
+      if (! styles.hasOwnProperty(i)) {
+        continue;
+      }
       node.style[i] = styles[i];
     }
   };
@@ -57,18 +69,15 @@
   /**
    *
    *
-   * @param node (node, optional) - the root element containing all elements with attached popovers
-   * @param options (Object, optional) method to retrieve the popover's data for a given node
+   * @param {Object} config - params
    */
-  var Tiler = function(config, defaults) {
-
+  var Tiler = function(config /* , defaults */) {
     var
     self = this,
     i = 0,
     n,
     node,
     l,
-    scale = 2,
     data,
     styles = {},
     width = 0,
@@ -119,7 +128,7 @@
          @param id -
          */
         click: function(id) {
-          //console.log('click ' + id);
+          // console.log('click ' + id);
         },
 
         /**
@@ -128,8 +137,8 @@
           @param back - old id of the tile (flipped out)
           @param front - new id of the tile (flipped in)
          */
-        flip: function(index, back, front) {
-          //console.log('flip ' + back + ' ' + front);
+        flip: function(/* index, back, front */) {
+          // console.log('flip ' + back + ' ' + front);
         }
       }
     };
@@ -173,7 +182,7 @@
       this.root.classList.add('rmr-tiler');
     }
 
-    this.listeners.mouseleave = this.root.addEventListener('mouseleave', function(event) {
+    this.listeners.mouseleave = this.root.addEventListener('mouseleave', function(/* event */) {
       self.hovered = -1;
       if (self.events && self.events.hover) {
         self.events.hover(self, -1, null);
@@ -195,7 +204,6 @@
     var dataSource = this.data.slice();
 
     for (i = 0; i < this.numberOfTiles; i++) {
-
       tile = document.createElement('div');
       tile.className = 'rmr-container';
       tile.setAttribute('data-tiler', i);
@@ -278,7 +286,6 @@
    @return array containing two integers, first integer being the 0-based row for the index, second integer being the 0-based column index
    */
   Tiler.prototype.positionForIndex = function(index) {
-
     if (index < 0 || index >= this.numberOfTiles) {
       throw new Error('invalid index! ' + index);
     }
@@ -291,7 +298,6 @@
   };
 
   Tiler.prototype.destroy = function() {
-
     this.root.removeEventListener('click', this.listeners.click);
     this.root.removeEventListener('mouseleave', this.listeners.mouseleave);
 
@@ -314,18 +320,16 @@
     newPosition = this.positionForIndex(index),
     currentPosition = this.hovered >= 0 ? this.positionForIndex(this.hovered) : [0,0];
 
-    // try to ensure the new index won't conflict with the currently zoomed tile (if applicable)... 
+    // try to ensure the new index won't conflict with the currently zoomed tile (if applicable)...
     if (
       this.zoom && this.hovered >= 0
     ) {
       do {
-
         index = randomizer();
         newPosition = this.positionForIndex(index);
         currentPosition = this.positionForIndex(this.hovered);
 
         iterations++;
-
        } while (iterations < MAX_ITERATIONS && (newPosition[0] <= currentPosition[0] + 1 && newPosition[0] >= currentPosition[0] - 1)
         &&
        (newPosition[1] <= currentPosition[1] + 1 && newPosition[1] >= currentPosition[1] - 1) );
@@ -338,7 +342,6 @@
     Flip a random tile
     */
   Tiler.prototype.flip = function() {
-
     var
     tiles = this.root.querySelectorAll('.rmr-tile'),
 
@@ -365,7 +368,9 @@
    Stop auto-flipping tiles
     */
   Tiler.prototype.stop = function() {
-    if (! this.timeout) { return; }
+    if (! this.timeout) {
+      return;
+    }
     window.clearTimeout(this.timeout);
     this.timeout = null;
   };
@@ -374,11 +379,14 @@
    Begin auto-flipping tiles (flipping one immediately) at periodic interval
     */
   Tiler.prototype.start = function() {
-
-    if (! this.root) { return; }
+    if (! this.root) {
+      return;
+    }
 
     // if timeout is already set, no further work is needed
-    if (this.timeout) { return; }
+    if (this.timeout) {
+      return;
+    }
 
     this.flip();
 
@@ -405,7 +413,6 @@
     Clean up
    */
   Tiler.prototype.destroy = function() {
-
     this.stop();
     this.root.innerHTML = '';
     this.root = null;
@@ -419,7 +426,7 @@
   /**
    * Return a string representation of the instance
    *
-   * @return {String}
+   * @return {String} description
    */
   Tiler.prototype.toString = function() {
     return 'Tiler ' + JSON.stringify({root: '' + this.root, delay: this.interval });
