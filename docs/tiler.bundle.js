@@ -71,7 +71,6 @@
 /* global document,window,HTMLElement */
 
 (function () {
-
   'use strict';
 
   window.Tiler = __webpack_require__(1);
@@ -81,25 +80,13 @@
 /* 1 */
 /***/ (function(module, exports) {
 
-
 /* jshint undef: true,strict:true,trailing:true,loopfunc:true */
 /* global document,window,HTMLElement */
 
 (function () {
-
   'use strict';
 
-  // prevent duplicate declaration
-
-  if (window.Tiler) {
-    return;
-  }
-
   var
-
-  //
-  VERSION = '0.0.3',
-
 
   // maximum number of times a new random tile will be selected in an attempt to avoid being a neighbor of the currently zoomed tile (if applicable)
   MAX_ITERATIONS = 100,
@@ -161,7 +148,7 @@
    */
   var Tiler = function (config, defaults) {
 
-    var $ = this,
+    var self = this,
         i = 0,
         n,
         node,
@@ -207,13 +194,13 @@
       interval: 1000,
 
       /**
-        Handlers for events 
+        Handlers for events
        */
       events: {
 
         /**
          Invoked when a tile is clicked
-          @param id - 
+          @param id -
          */
         click: function (id) {
           //console.log('click ' + id);
@@ -233,8 +220,7 @@
     config = merge(defaultConfig, config);
 
     /**
-      
-    */
+     */
     this.interval = config.interval;
 
     this.timeout = null;
@@ -251,7 +237,7 @@
       throw Error('Invalid Tiler root [' + config.root + ']');
     }
 
-    if (!this.data || this.data.length == 0) {
+    if (!this.data || this.data.length === 0) {
       throw Error('No data for Tiler [' + config.root + ']');
     }
 
@@ -270,9 +256,9 @@
     }
 
     this.listeners.mouseleave = this.root.addEventListener('mouseleave', function (event) {
-      $.hovered = -1;
-      if ($.events && $.events.hover) {
-        $.events.hover($, -1, null);
+      self.hovered = -1;
+      if (self.events && self.events.hover) {
+        self.events.hover(self, -1, null);
       }
     });
 
@@ -297,9 +283,9 @@
       tile.setAttribute('data-tiler', i);
 
       tile.addEventListener('mouseenter', function (event) {
-        $.hovered = event.target.getAttribute('data-tiler');
-        if ($.events && $.events.hover) {
-          $.events.hover($, $.hovered, $.data[$.hovered]);
+        self.hovered = event.target.getAttribute('data-tiler');
+        if (self.events && self.events.hover) {
+          self.events.hover(self, self.hovered, self.data[self.hovered]);
         }
       });
 
@@ -311,7 +297,7 @@
           tile.className += ' bottomright';
         } else if (i === width / dimension - 1) {
           tile.className += ' topright';
-        } else if (i % (width / dimension) === 0 && this.numberOfTiles - i == width / dimension) {
+        } else if (i % (width / dimension) === 0 && this.numberOfTiles - i === width / dimension) {
           tile.className += ' bottomleft';
         } else if (i < width / dimension) {
           tile.className += ' top';
@@ -327,7 +313,7 @@
       this.tilesPerRow = parseInt(width / dimension, 10);
       this.tilesPerColumn = parseInt(this.numberOfTiles / this.tilesPerRow, 10);
 
-      // add necessary children & dimensions 
+      // add necessary children & dimensions
       tile.innerHTML = '<div class="rmr-tile"><section class="rmr-tile-front"><figure></figure></section><section class="rmr-tile-back"><figure></figure></section>';
       setStyles(tile, { width: dimension + 'px', height: dimension + 'px' });
 
@@ -336,7 +322,7 @@
       tile.querySelector('.rmr-tile-front figure').className = dataSource[index];
 
       dataSource.splice(index, 1);
-      if (dataSource.length == 0) {
+      if (dataSource.length === 0) {
         dataSource = this.data.slice();
       }
 
@@ -344,12 +330,12 @@
     }
 
     this.listeners.click = this.root.addEventListener('click', function (e) {
-      if ($.events && $.events.click) {
+      if (self.events && self.events.click) {
         var n = e.target;
         while (!n.classList.contains('rmr-container')) {
           n = n.parentNode;
         }
-        $.events.click($, parseInt(n.getAttribute('data-tiler'), 10), e.target.className);
+        self.events.click(self, parseInt(n.getAttribute('data-tiler'), 10), e.target.className);
       }
     });
 
@@ -364,8 +350,7 @@
 
   /**
    Calculate the x and y location of an index
-   
-   @param index {Int}
+    @param index {Int}
    @return array containing two integers, first integer being the 0-based row for the index, second integer being the 0-based column index
    */
   Tiler.prototype.positionForIndex = function (index) {
@@ -390,14 +375,13 @@
     this.data = [];
     this.zoom = false;
     this.hovered = -1;
-    //this.root = null;
+    // this.root = null;
   };
 
   Tiler.prototype.newTileIndex = function () {
-
-    var $ = this,
+    var self = this,
         randomizer = function () {
-      return Math.floor(Math.random() * $.numberOfTiles);
+      return Math.floor(Math.random() * self.numberOfTiles);
     },
         index = randomizer(),
         iterations = 0,
